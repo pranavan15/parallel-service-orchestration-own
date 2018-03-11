@@ -20,10 +20,10 @@ service<http> travelAgencyService {
         create http:HttpClient("http://localhost:9093/car", {});
     }
 
-    @http:resourceConfig {methods:["POST"]}
-    resource arrangeTour (http:Connection connection, http:InRequest request) {
-        http:OutResponse response = {};
-        json inReqPayload = request.getJsonPayload();
+    @http:resourceConfig {methods:["POST"], consumes:["application/json"], produces:["application/json"]}
+    resource arrangeTour (http:Connection connection, http:InRequest inRequest) {
+        http:OutResponse outResponse = {};
+        json inReqPayload = inRequest.getJsonPayload();
 
         json departureDate = inReqPayload.depart;
         json returnDate = inReqPayload.returnDate;
@@ -31,6 +31,14 @@ service<http> travelAgencyService {
         json to = inReqPayload.to;
         json vehicleType = inReqPayload.vehicleType;
         json location = inReqPayload.location;
+
+        if (departureDate == null || returnDate == null || from == null || to == null || vehicleType == null ||
+            location == null) {
+            outResponse.statusCode = 400;
+            outResponse.setJsonPayload({"Message":"Bad Request - Invalid Payload"});
+            _ = connection.respond(outResponse);
+            return;
+        }
 
         json flightPayload = {"departure":departureDate, "returnDate":returnDate, "from":from, "to":to};
         json hotelPayload = {"from":departureDate, "to":returnDate, "location":location};
@@ -249,7 +257,7 @@ service<http> travelAgencyService {
                                   }
                               };
 
-        response.setJsonPayload(clientResponse);
-        _ = connection.respond(response);
+        outResponse.setJsonPayload(clientResponse);
+        _ = connection.respond(outResponse);
     }
 }
