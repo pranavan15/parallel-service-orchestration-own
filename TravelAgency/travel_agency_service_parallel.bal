@@ -2,8 +2,8 @@ package TravelAgency;
 
 import ballerina.net.http;
 
-@http:configuration {basePath:"/web", port:9090}
-service<http> HolidayPackage {
+@http:configuration {basePath:"/travel", port:9090}
+service<http> travelAgencyService {
 
     // Endpoint to communicate with Airline reservation service
     endpoint<http:HttpClient> airlineReservationEP {
@@ -20,22 +20,21 @@ service<http> HolidayPackage {
         create http:HttpClient("http://localhost:9093/car", {});
     }
 
-    @http:resourceConfig {methods:["GET"], path:"/holiday"}
-    resource holidayPackage (http:Connection connection, http:InRequest request) {
+    @http:resourceConfig {methods:["POST"]}
+    resource arrangeTour (http:Connection connection, http:InRequest request) {
         http:OutResponse response = {};
-        map params = request.getQueryParams();
-        var departureDate, _ = (string)params.depart;
-        var returnDate, _ = (string)params.returnDate;
-        var from, _ = (string)params.from;
-        var to, _ = (string)params.to;
-        var vehicleType, _ = (string)params.vehicleType;
-        var location, _ = (string)params.location;
+        json inReqPayload = request.getJsonPayload();
 
-        string flightPayload = string `{"departure":"{{departureDate}}", "returnDate":"{{returnDate}}",
-        "from":"{{from}}", "to":"{{to}}"}`;
-        string vehiclePayload = string `{"from":"{{departureDate}}", "to":"{{returnDate}}",
-        "vehicleType":"{{vehicleType}}"}`;
-        string hotelPayload = string `{"from":"{{departureDate}}", "to":"{{returnDate}}", "location":"{{location}}"}`;
+        json departureDate = inReqPayload.depart;
+        json returnDate = inReqPayload.returnDate;
+        json from = inReqPayload.from;
+        json to = inReqPayload.to;
+        json vehicleType = inReqPayload.vehicleType;
+        json location = inReqPayload.location;
+
+        json flightPayload = {"departure":departureDate, "returnDate":returnDate, "from":from, "to":to};
+        json hotelPayload = {"from":departureDate, "to":returnDate, "location":location};
+        json vehiclePayload = {"from":departureDate, "to":returnDate, "vehicleType":vehicleType};
 
         json jsonFlightResponse;
         json jsonVehicleResponse;
@@ -50,28 +49,25 @@ service<http> HolidayPackage {
         fork {
 
             worker qatarWorker {
-                var payload, _ = <json>flightPayload;
                 http:OutRequest req = {};
                 http:InResponse respWorkerQatar = {};
-                req.setJsonPayload(payload);
+                req.setJsonPayload(flightPayload);
                 respWorkerQatar, _ = airlineReservationEP.post("/qatarAirways", req);
                 respWorkerQatar -> fork;
             }
 
             worker asianaWorker {
-                var payload, _ = <json>flightPayload;
                 http:OutRequest req = {};
                 http:InResponse respWorkerAsiana = {};
-                req.setJsonPayload(payload);
+                req.setJsonPayload(flightPayload);
                 respWorkerAsiana, _ = airlineReservationEP.post("/asiana", req);
                 respWorkerAsiana -> fork;
             }
 
             worker emiratesWorker {
-                var payload, _ = <json>flightPayload;
                 http:OutRequest req = {};
                 http:InResponse respWorkerEmirates = {};
-                req.setJsonPayload(payload);
+                req.setJsonPayload(flightPayload);
                 respWorkerEmirates, _ = airlineReservationEP.post("/emirates", req);
                 respWorkerEmirates -> fork;
             }
@@ -120,33 +116,30 @@ service<http> HolidayPackage {
         fork {
 
             worker miramar {
-                var payload, _ = <json>hotelPayload;
                 http:OutRequest req = {};
                 http:InResponse respWorkerMiramar = {};
-                req.setJsonPayload(payload);
+                req.setJsonPayload(hotelPayload);
                 respWorkerMiramar, _ = hotelReservationEP.post("/miramar", req);
                 respWorkerMiramar -> fork;
             }
 
             worker aqueen {
-                var payload, _ = <json>hotelPayload;
                 http:OutRequest req = {};
                 http:InResponse respWorkerAqueen = {};
-                req.setJsonPayload(payload);
+                req.setJsonPayload(hotelPayload);
                 respWorkerAqueen, _ = hotelReservationEP.post("/aqueen", req);
                 respWorkerAqueen -> fork;
             }
 
             worker elizabeth {
-                var payload, _ = <json>hotelPayload;
                 http:OutRequest req = {};
                 http:InResponse respWorkerElizabeth = {};
-                req.setJsonPayload(payload);
+                req.setJsonPayload(hotelPayload);
                 respWorkerElizabeth, _ = hotelReservationEP.post("/elizabeth", req);
                 respWorkerElizabeth -> fork;
             }
         } join (all) (map hotelResponses) {
-            // Wait until all the responses are received from the parallely running workers
+            // Wait until all the responses are received from the parallel running workers
             var miramarDistance = 0;
             var aqueenDistance = 0;
             var elizabethDistance = 0;
@@ -189,28 +182,25 @@ service<http> HolidayPackage {
         fork {
 
             worker driveSg {
-                var payload, _ = <json>vehiclePayload;
                 http:OutRequest req = {};
                 http:InResponse respWorkerDriveSg = {};
-                req.setJsonPayload(payload);
+                req.setJsonPayload(vehiclePayload);
                 respWorkerDriveSg, _ = carRentalEP.post("/driveSg", req);
                 respWorkerDriveSg -> fork;
             }
 
             worker dreamCar {
-                var payload, _ = <json>vehiclePayload;
                 http:OutRequest req = {};
                 http:InResponse respWorkerDreamCar = {};
-                req.setJsonPayload(payload);
+                req.setJsonPayload(vehiclePayload);
                 respWorkerDreamCar, _ = carRentalEP.post("/dreamCar", req);
                 respWorkerDreamCar -> fork;
             }
 
             worker sixt {
-                var payload, _ = <json>vehiclePayload;
                 http:OutRequest req = {};
                 http:InResponse respWorkerSixt = {};
-                req.setJsonPayload(payload);
+                req.setJsonPayload(vehiclePayload);
                 respWorkerSixt, _ = carRentalEP.post("/sixt", req);
                 respWorkerSixt -> fork;
             }

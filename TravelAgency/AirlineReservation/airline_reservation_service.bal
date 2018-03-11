@@ -3,7 +3,7 @@ package TravelAgency.AirlineReservation;
 import ballerina.net.http;
 
 @http:configuration {basePath:"/airline", port:9091}
-service<http> AirlineService {
+service<http> airlineReservationService {
 
     @http:resourceConfig {methods:["POST"], path:"/qatarAirways"}
     resource flightConcord (http:Connection connection, http:InRequest request) {

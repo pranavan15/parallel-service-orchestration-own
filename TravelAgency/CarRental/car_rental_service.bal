@@ -3,7 +3,7 @@ package TravelAgency.CarRental;
 import ballerina.net.http;
 
 @http:configuration {basePath:"/car", port:9093}
-service<http> CarRentalService {
+service<http> carRentalService {
 
     @http:resourceConfig {methods:["POST"], path:"/driveSg"}
     resource driveSg (http:Connection connection, http:InRequest request) {

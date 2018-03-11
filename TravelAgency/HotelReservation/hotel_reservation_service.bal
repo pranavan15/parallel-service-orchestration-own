@@ -3,7 +3,7 @@ package TravelAgency.HotelReservation;
 import ballerina.net.http;
 
 @http:configuration {basePath:"/hotel", port:9092}
-service<http> HotelService {
+service<http> hotelReservationService {
 
     @http:resourceConfig {methods:["POST"], path:"/miramar"}
     resource miramar (http:Connection connection, http:InRequest request) {
