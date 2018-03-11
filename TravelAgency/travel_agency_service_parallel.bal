@@ -5,15 +5,23 @@ import ballerina.net.http;
 @http:configuration {basePath:"/web", port:9090}
 service<http> HolidayPackage {
 
-    @http:resourceConfig {
-        methods:["GET"],
-        path:"/holiday"
+    // Endpoint to communicate with Airline reservation service
+    endpoint<http:HttpClient> airlineReservationEP {
+        create http:HttpClient("http://localhost:9091/airline", {});
     }
-    resource holidayPackage (http:Connection connection, http:InRequest request) {
-        endpoint<http:HttpClient> httpEndpoint {
-            create http:HttpClient("http://localhost:9090/", {});
-        }
 
+    // Endpoint to communicate with Hotel reservation service
+    endpoint<http:HttpClient> hotelReservationEP {
+        create http:HttpClient("http://localhost:9092/hotel", {});
+    }
+
+    // Endpoint to communicate with Car rental service
+    endpoint<http:HttpClient> carRentalEP {
+        create http:HttpClient("http://localhost:9093/car", {});
+    }
+
+    @http:resourceConfig {methods:["GET"], path:"/holiday"}
+    resource holidayPackage (http:Connection connection, http:InRequest request) {
         http:OutResponse response = {};
         map params = request.getQueryParams();
         var departureDate, _ = (string)params.depart;
@@ -46,7 +54,7 @@ service<http> HolidayPackage {
                 http:OutRequest req = {};
                 http:InResponse respWorkerQatar = {};
                 req.setJsonPayload(payload);
-                respWorkerQatar, _ = httpEndpoint.post("/airline/qatarAirways", req);
+                respWorkerQatar, _ = airlineReservationEP.post("/qatarAirways", req);
                 respWorkerQatar -> fork;
             }
 
@@ -55,7 +63,7 @@ service<http> HolidayPackage {
                 http:OutRequest req = {};
                 http:InResponse respWorkerAsiana = {};
                 req.setJsonPayload(payload);
-                respWorkerAsiana, _ = httpEndpoint.post("/airline/asiana", req);
+                respWorkerAsiana, _ = airlineReservationEP.post("/asiana", req);
                 respWorkerAsiana -> fork;
             }
 
@@ -64,7 +72,7 @@ service<http> HolidayPackage {
                 http:OutRequest req = {};
                 http:InResponse respWorkerEmirates = {};
                 req.setJsonPayload(payload);
-                respWorkerEmirates, _ = httpEndpoint.post("/airline/emirates", req);
+                respWorkerEmirates, _ = airlineReservationEP.post("/emirates", req);
                 respWorkerEmirates -> fork;
             }
         } join (all) (map airlineResponses) {
@@ -111,61 +119,12 @@ service<http> HolidayPackage {
 
         fork {
 
-            worker driveSg {
-                var payload, _ = <json>vehiclePayload;
-                http:OutRequest req = {};
-                http:InResponse respWorkerDriveSg = {};
-                req.setJsonPayload(payload);
-                respWorkerDriveSg, _ = httpEndpoint.post("/carRental/driveSg", req);
-                respWorkerDriveSg -> fork;
-            }
-
-            worker dreamCar {
-                var payload, _ = <json>vehiclePayload;
-                http:OutRequest req = {};
-                http:InResponse respWorkerDreamCar = {};
-                req.setJsonPayload(payload);
-                respWorkerDreamCar, _ = httpEndpoint.post("/carRental/dreamCar", req);
-                respWorkerDreamCar -> fork;
-            }
-
-            worker sixt {
-                var payload, _ = <json>vehiclePayload;
-                http:OutRequest req = {};
-                http:InResponse respWorkerSixt = {};
-                req.setJsonPayload(payload);
-                respWorkerSixt, _ = httpEndpoint.post("/carRental/sixt", req);
-                respWorkerSixt -> fork;
-            }
-        } join (some 1) (map carResponses) {
-            // Get the first responding worker
-            if (carResponses["driveSg"] != null) {
-                var resDriveSgWorker, _ = (any[])carResponses["driveSg"];
-                var responseDriveSg, _ = (http:InResponse)(resDriveSgWorker[0]);
-                jsonVehicleResponse = responseDriveSg.getJsonPayload();
-            }
-
-            else if (carResponses["dreamCar"] != null) {
-                var resDreamCarWorker, _ = (any[])carResponses["dreamCar"];
-                var responseDreamCar, _ = (http:InResponse)(resDreamCarWorker[0]);
-                jsonVehicleResponse = responseDreamCar.getJsonPayload();
-            }
-
-            else if (carResponses["sixt"] != null) {
-                var resSixtWorker, _ = (any[])carResponses["sixt"];
-                var responseSixt, _ = ((http:InResponse)(resSixtWorker[0]));
-                jsonVehicleResponse = responseSixt.getJsonPayload();
-            }
-        }
-
-        fork {
-
             worker miramar {
                 var payload, _ = <json>hotelPayload;
                 http:OutRequest req = {};
                 http:InResponse respWorkerMiramar = {};
                 req.setJsonPayload(payload);
-                respWorkerMiramar, _ = httpEndpoint.post("/hotel/miramar", req);
+                respWorkerMiramar, _ = hotelReservationEP.post("/miramar", req);
                 respWorkerMiramar -> fork;
             }
 
@@ -174,7 +133,7 @@ service<http> HolidayPackage {
                 http:OutRequest req = {};
                 http:InResponse respWorkerAqueen = {};
                 req.setJsonPayload(payload);
-                respWorkerAqueen, _ = httpEndpoint.post("/hotel/aqueen", req);
+                respWorkerAqueen, _ = hotelReservationEP.post("/aqueen", req);
                 respWorkerAqueen -> fork;
             }
 
@@ -183,7 +142,7 @@ service<http> HolidayPackage {
                 http:OutRequest req = {};
                 http:InResponse respWorkerElizabeth = {};
                 req.setJsonPayload(payload);
-                respWorkerElizabeth, _ = httpEndpoint.post("/hotel/elizabeth", req);
+                respWorkerElizabeth, _ = hotelReservationEP.post("/elizabeth", req);
                 respWorkerElizabeth -> fork;
             }
         } join (all) (map hotelResponses) {
@@ -224,6 +183,55 @@ service<http> HolidayPackage {
                 else {
                     jsonHotelResponse = elizabethJsonResponse;
                 }
+            }
+        }
+
+        fork {
+
+            worker driveSg {
+                var payload, _ = <json>vehiclePayload;
+                http:OutRequest req = {};
+                http:InResponse respWorkerDriveSg = {};
+                req.setJsonPayload(payload);
+                respWorkerDriveSg, _ = carRentalEP.post("/driveSg", req);
+                respWorkerDriveSg -> fork;
+            }
+
+            worker dreamCar {
+                var payload, _ = <json>vehiclePayload;
+                http:OutRequest req = {};
+                http:InResponse respWorkerDreamCar = {};
+                req.setJsonPayload(payload);
+                respWorkerDreamCar, _ = carRentalEP.post("/dreamCar", req);
+                respWorkerDreamCar -> fork;
+            }
+
+            worker sixt {
+                var payload, _ = <json>vehiclePayload;
+                http:OutRequest req = {};
+                http:InResponse respWorkerSixt = {};
+                req.setJsonPayload(payload);
+                respWorkerSixt, _ = carRentalEP.post("/sixt", req);
+                respWorkerSixt -> fork;
+            }
+        } join (some 1) (map carResponses) {
+            // Get the first responding worker
+            if (carResponses["driveSg"] != null) {
+                var resDriveSgWorker, _ = (any[])carResponses["driveSg"];
+                var responseDriveSg, _ = (http:InResponse)(resDriveSgWorker[0]);
+                jsonVehicleResponse = responseDriveSg.getJsonPayload();
+            }
+
+            else if (carResponses["dreamCar"] != null) {
+                var resDreamCarWorker, _ = (any[])carResponses["dreamCar"];
+                var responseDreamCar, _ = (http:InResponse)(resDreamCarWorker[0]);
+                jsonVehicleResponse = responseDreamCar.getJsonPayload();
+            }
+
+            else if (carResponses["sixt"] != null) {
+                var resSixtWorker, _ = (any[])carResponses["sixt"];
+                var responseSixt, _ = ((http:InResponse)(resSixtWorker[0]));
+                jsonVehicleResponse = responseSixt.getJsonPayload();
             }
         }
 
