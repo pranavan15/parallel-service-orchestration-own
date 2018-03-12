@@ -10,11 +10,11 @@ service<http> hotelReservationService {
     resource miramar (http:Connection connection, http:InRequest inRequest) {
         http:OutResponse outResponse = {};
         json receivedPayload = inRequest.getJsonPayload();
-        json from = receivedPayload.from;
-        json to = receivedPayload.to;
-        json location = receivedPayload.location;
+        json arrivalDate = receivedPayload.ArrivalDate;
+        json departureDate = receivedPayload.DepartureDate;
+        json location = receivedPayload.Location;
 
-        if (from == null || to == null || location == null) {
+        if (arrivalDate == null || departureDate == null || location == null) {
             outResponse.statusCode = 400;
             outResponse.setJsonPayload({"Message":"Bad Request - Invalid Payload"});
             _ = connection.respond(outResponse);
@@ -22,10 +22,10 @@ service<http> hotelReservationService {
         }
 
         json hotelDetails = {
-                                "Hotel":"miramar",
-                                "From":from,
-                                "To":to,
-                                "DistanceToLocation":10
+                                "HotelName":"miramar",
+                                "FromDate":arrivalDate,
+                                "ToDate":departureDate,
+                                "DistanceToLocation":6
                             };
         outResponse.setJsonPayload(hotelDetails);
         _ = connection.respond(outResponse);
@@ -36,11 +36,11 @@ service<http> hotelReservationService {
     resource aqueen (http:Connection connection, http:InRequest inRequest) {
         http:OutResponse outResponse = {};
         json receivedPayload = inRequest.getJsonPayload();
-        json from = receivedPayload.from;
-        json to = receivedPayload.to;
-        json location = receivedPayload.location;
+        json arrivalDate = receivedPayload.ArrivalDate;
+        json departureDate = receivedPayload.DepartureDate;
+        json location = receivedPayload.Location;
 
-        if (from == null || to == null || location == null) {
+        if (arrivalDate == null || departureDate == null || location == null) {
             outResponse.statusCode = 400;
             outResponse.setJsonPayload({"Message":"Bad Request - Invalid Payload"});
             _ = connection.respond(outResponse);
@@ -48,10 +48,10 @@ service<http> hotelReservationService {
         }
 
         json hotelDetails = {
-                                "Hotel":"aqueen",
-                                "From":from,
-                                "To":to,
-                                "DistanceToLocation":8
+                                "HotelName":"aqueen",
+                                "FromDate":arrivalDate,
+                                "ToDate":departureDate,
+                                "DistanceToLocation":4
                             };
         outResponse.setJsonPayload(hotelDetails);
         _ = connection.respond(outResponse);
@@ -62,11 +62,11 @@ service<http> hotelReservationService {
     resource elizabeth (http:Connection connection, http:InRequest inRequest) {
         http:OutResponse outResponse = {};
         json receivedPayload = inRequest.getJsonPayload();
-        json from = receivedPayload.from;
-        json to = receivedPayload.to;
-        json location = receivedPayload.location;
+        json arrivalDate = receivedPayload.ArrivalDate;
+        json departureDate = receivedPayload.DepartureDate;
+        json location = receivedPayload.Location;
 
-        if (from == null || to == null || location == null) {
+        if (arrivalDate == null || departureDate == null || location == null) {
             outResponse.statusCode = 400;
             outResponse.setJsonPayload({"Message":"Bad Request - Invalid Payload"});
             _ = connection.respond(outResponse);
@@ -74,10 +74,10 @@ service<http> hotelReservationService {
         }
 
         json hotelDetails = {
-                                "Hotel":"elizabeth",
-                                "From":from,
-                                "To":to,
-                                "DistanceToLocation":5
+                                "HotelName":"elizabeth",
+                                "FromDate":arrivalDate,
+                                "ToDate":departureDate,
+                                "DistanceToLocation":2
                             };
         outResponse.setJsonPayload(hotelDetails);
         _ = connection.respond(outResponse);

@@ -10,11 +10,11 @@ service<http> carRentalService {
     resource driveSg (http:Connection connection, http:InRequest inRequest) {
         http:OutResponse outResponse = {};
         json receivedPayload = inRequest.getJsonPayload();
-        json from = receivedPayload.from;
-        json to = receivedPayload.to;
-        json vehicleType = receivedPayload.vehicleType;
+        json arrivalDate = receivedPayload.ArrivalDate;
+        json departureDate = receivedPayload.DepartureDate;
+        json vehicleType = receivedPayload.VehicleType;
 
-        if (from == null || to == null || vehicleType == null) {
+        if (arrivalDate == null || departureDate == null || vehicleType == null) {
             outResponse.statusCode = 400;
             outResponse.setJsonPayload({"Message":"Bad Request - Invalid Payload"});
             _ = connection.respond(outResponse);
@@ -24,9 +24,9 @@ service<http> carRentalService {
         json vehicleDetails = {
                                   "Company":"DriveSG",
                                   "VehicleType":vehicleType,
-                                  "From":from,
-                                  "To":to,
-                                  "price":50
+                                  "FromDate":arrivalDate,
+                                  "ToDate":departureDate,
+                                  "PricePerDay":5
                               };
         outResponse.setJsonPayload(vehicleDetails);
         _ = connection.respond(outResponse);
@@ -37,11 +37,11 @@ service<http> carRentalService {
     resource dreamCar (http:Connection connection, http:InRequest inRequest) {
         http:OutResponse outResponse = {};
         json receivedPayload = inRequest.getJsonPayload();
-        json from = receivedPayload.from;
-        json to = receivedPayload.to;
-        json vehicleType = receivedPayload.vehicleType;
+        json arrivalDate = receivedPayload.ArrivalDate;
+        json departureDate = receivedPayload.DepartureDate;
+        json vehicleType = receivedPayload.VehicleType;
 
-        if (from == null || to == null || vehicleType == null) {
+        if (arrivalDate == null || departureDate == null || vehicleType == null) {
             outResponse.statusCode = 400;
             outResponse.setJsonPayload({"Message":"Bad Request - Invalid Payload"});
             _ = connection.respond(outResponse);
@@ -51,9 +51,9 @@ service<http> carRentalService {
         json vehicleDetails = {
                                   "Company":"DreamCar",
                                   "VehicleType":vehicleType,
-                                  "From":from,
-                                  "To":to,
-                                  "price":60
+                                  "FromDate":arrivalDate,
+                                  "ToDate":departureDate,
+                                  "PricePerDay":6
                               };
         outResponse.setJsonPayload(vehicleDetails);
         _ = connection.respond(outResponse);
@@ -63,11 +63,11 @@ service<http> carRentalService {
     resource sixT (http:Connection connection, http:InRequest inRequest) {
         http:OutResponse outResponse = {};
         json receivedPayload = inRequest.getJsonPayload();
-        json from = receivedPayload.from;
-        json to = receivedPayload.to;
-        json vehicleType = receivedPayload.vehicleType;
+        json arrivalDate = receivedPayload.ArrivalDate;
+        json departureDate = receivedPayload.DepartureDate;
+        json vehicleType = receivedPayload.VehicleType;
 
-        if (from == null || to == null || vehicleType == null) {
+        if (arrivalDate == null || departureDate == null || vehicleType == null) {
             outResponse.statusCode = 400;
             outResponse.setJsonPayload({"Message":"Bad Request - Invalid Payload"});
             _ = connection.respond(outResponse);
@@ -77,9 +77,9 @@ service<http> carRentalService {
         json vehicleDetails = {
                                   "Company":"SixT",
                                   "VehicleType":vehicleType,
-                                  "From":from,
-                                  "To":to,
-                                  "price":65
+                                  "FromDate":arrivalDate,
+                                  "ToDate":departureDate,
+                                  "PricePerDay":7
                               };
         outResponse.setJsonPayload(vehicleDetails);
         _ = connection.respond(outResponse);

@@ -25,14 +25,14 @@ service<http> travelAgencyService {
         http:OutResponse outResponse = {};
         json inReqPayload = inRequest.getJsonPayload();
 
-        json departureDate = inReqPayload.depart;
-        json returnDate = inReqPayload.returnDate;
-        json from = inReqPayload.from;
-        json to = inReqPayload.to;
-        json vehicleType = inReqPayload.vehicleType;
-        json location = inReqPayload.location;
+        json arrivalDate = inReqPayload.ArrivalDate;
+        json departureDate = inReqPayload.DepartureDate;
+        json from = inReqPayload.From;
+        json to = inReqPayload.To;
+        json vehicleType = inReqPayload.VehicleType;
+        json location = inReqPayload.Location;
 
-        if (departureDate == null || returnDate == null || from == null || to == null || vehicleType == null ||
+        if (arrivalDate == null || departureDate == null || from == null || to == null || vehicleType == null ||
             location == null) {
             outResponse.statusCode = 400;
             outResponse.setJsonPayload({"Message":"Bad Request - Invalid Payload"});
@@ -40,9 +40,9 @@ service<http> travelAgencyService {
             return;
         }
 
-        json flightPayload = {"departure":departureDate, "returnDate":returnDate, "from":from, "to":to};
-        json hotelPayload = {"from":departureDate, "to":returnDate, "location":location};
-        json vehiclePayload = {"from":departureDate, "to":returnDate, "vehicleType":vehicleType};
+        json flightPayload = {"ArrivalDate":arrivalDate, "DepartureDate":departureDate, "From":from, "To":to};
+        json hotelPayload = {"ArrivalDate":arrivalDate, "DepartureDate":departureDate, "Location":location};
+        json vehiclePayload = {"ArrivalDate":arrivalDate, "DepartureDate":departureDate, "VehicleType":vehicleType};
 
         json jsonFlightResponse;
         json jsonVehicleResponse;
@@ -89,21 +89,21 @@ service<http> travelAgencyService {
                 var resQatarWorker, _ = (any[])airlineResponses["qatarWorker"];
                 var responseQatar, _ = (http:InResponse)(resQatarWorker[0]);
                 jsonFlightResponseQatar = responseQatar.getJsonPayload();
-                qatarPrice, _ = (int)responseQatar.getJsonPayload().price;
+                qatarPrice, _ = (int)jsonFlightResponseQatar.Price;
             }
 
             if (airlineResponses["asianaWorker"] != null) {
                 var resAsianaWorker, _ = (any[])airlineResponses["asianaWorker"];
                 var responseAsiana, _ = (http:InResponse)(resAsianaWorker[0]);
                 jsonFlightResponseAsiana = responseAsiana.getJsonPayload();
-                asianaPrice, _ = (int)responseAsiana.getJsonPayload().price;
+                asianaPrice, _ = (int)jsonFlightResponseAsiana.Price;
             }
 
             if (airlineResponses["emiratesWorker"] != null) {
                 var resEmiratesWorker, _ = (any[])airlineResponses["emiratesWorker"];
                 var responseEmirates, _ = ((http:InResponse)(resEmiratesWorker[0]));
                 jsonFlightResponseEmirates = responseEmirates.getJsonPayload();
-                emiratesPrice, _ = (int)responseEmirates.getJsonPayload().price;
+                emiratesPrice, _ = (int)jsonFlightResponseEmirates.Price;
 
             }
 
@@ -156,21 +156,21 @@ service<http> travelAgencyService {
                 var resMiramarWorker, _ = (any[])hotelResponses["miramar"];
                 var responseMiramar, _ = (http:InResponse)(resMiramarWorker[0]);
                 miramarJsonResponse = responseMiramar.getJsonPayload();
-                miramarDistance, _ = (int)responseMiramar.getJsonPayload().DistanceToLocation;
+                miramarDistance, _ = (int)miramarJsonResponse.DistanceToLocation;
             }
 
             if (hotelResponses["aqueen"] != null) {
                 var resAqueenWorker, _ = (any[])hotelResponses["aqueen"];
                 var responseAqueen, _ = (http:InResponse)(resAqueenWorker[0]);
                 aqueenJsonResponse = responseAqueen.getJsonPayload();
-                aqueenDistance, _ = (int)responseAqueen.getJsonPayload().DistanceToLocation;
+                aqueenDistance, _ = (int)aqueenJsonResponse.DistanceToLocation;
             }
 
             if (hotelResponses["elizabeth"] != null) {
                 var resElizabethWorker, _ = (any[])hotelResponses["elizabeth"];
                 var responseElizabeth, _ = ((http:InResponse)(resElizabethWorker[0]));
                 elizabethJsonResponse = responseElizabeth.getJsonPayload();
-                elizabethDistance, _ = (int)responseElizabeth.getJsonPayload().DistanceToLocation;
+                elizabethDistance, _ = (int)elizabethJsonResponse.DistanceToLocation;
             }
 
             if (miramarDistance < aqueenDistance) {
@@ -234,27 +234,9 @@ service<http> travelAgencyService {
         }
 
         json clientResponse = {
-                                  "Flight":
-                                  {
-                                      "Company":jsonFlightResponse.Flight,
-                                      "Departure Date":jsonFlightResponse.DepartureDate,
-                                      "From":jsonFlightResponse.From,
-                                      "To":jsonFlightResponse.To,
-                                      "Price":jsonFlightResponse.price
-                                  },
-                                  "Vehicle":
-                                  {
-                                      "Company":jsonVehicleResponse.Company,
-                                      "VehicleType":jsonVehicleResponse.VehicleType,
-                                      "Price per Day($)":jsonVehicleResponse.price
-                                  },
-                                  "Hotel":
-                                  {
-                                      "Hotel":jsonHotelResponse.Hotel,
-                                      "From Date":jsonHotelResponse.From,
-                                      "To Date":jsonHotelResponse.To,
-                                      "Distance to Location(Miles)":jsonHotelResponse.DistanceToLocation
-                                  }
+                                  "Flight":jsonFlightResponse,
+                                  "Hotel":jsonHotelResponse,
+                                  "Vehicle":jsonVehicleResponse
                               };
 
         outResponse.setJsonPayload(clientResponse);

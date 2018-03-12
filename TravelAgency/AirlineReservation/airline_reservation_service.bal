@@ -10,12 +10,12 @@ service<http> airlineReservationService {
     resource flightConcord (http:Connection connection, http:InRequest inRequest) {
         http:OutResponse outResponse = {};
         json receivedPayload = inRequest.getJsonPayload();
-        json departureDate = receivedPayload.departure;
-        json returnDate = receivedPayload.returnDate;
-        json from = receivedPayload.from;
-        json to = receivedPayload.to;
+        json arrivalDate = receivedPayload.ArrivalDate;
+        json departureDate = receivedPayload.DepartureDate;
+        json from = receivedPayload.From;
+        json to = receivedPayload.To;
 
-        if (departureDate == null || returnDate == null || from == null || to == null) {
+        if (arrivalDate == null || departureDate == null || from == null || to == null) {
             outResponse.statusCode = 400;
             outResponse.setJsonPayload({"Message":"Bad Request - Invalid Payload"});
             _ = connection.respond(outResponse);
@@ -23,12 +23,12 @@ service<http> airlineReservationService {
         }
 
         json flightDetails = {
-                                 "Flight":"Qatar Airways",
-                                 "DepartureDate":departureDate,
-                                 "ReturnDate":returnDate,
+                                 "Airline":"Qatar Airways",
+                                 "ArrivalDate":arrivalDate,
+                                 "ReturnDate":departureDate,
                                  "From":from,
                                  "To":to,
-                                 "price":278
+                                 "Price":278
                              };
         outResponse.setJsonPayload(flightDetails);
         _ = connection.respond(outResponse);
@@ -39,12 +39,12 @@ service<http> airlineReservationService {
     resource flightAsiana (http:Connection connection, http:InRequest inRequest) {
         http:OutResponse outResponse = {};
         json receivedPayload = inRequest.getJsonPayload();
-        json departureDate = receivedPayload.departure;
-        json returnDate = receivedPayload.returnDate;
-        json from = receivedPayload.from;
-        json to = receivedPayload.to;
+        json arrivalDate = receivedPayload.ArrivalDate;
+        json departureDate = receivedPayload.DepartureDate;
+        json from = receivedPayload.From;
+        json to = receivedPayload.To;
 
-        if (departureDate == null || returnDate == null || from == null || to == null) {
+        if (arrivalDate == null || arrivalDate == null || from == null || to == null) {
             outResponse.statusCode = 400;
             outResponse.setJsonPayload({"Message":"Bad Request - Invalid Payload"});
             _ = connection.respond(outResponse);
@@ -52,12 +52,12 @@ service<http> airlineReservationService {
         }
 
         json flightDetails = {
-                                 "Flight":"Asiana",
-                                 "DepartureDate":departureDate,
-                                 "ReturnDate":returnDate,
+                                 "Airline":"Asiana",
+                                 "ArrivalDate":arrivalDate,
+                                 "ReturnDate":arrivalDate,
                                  "From":from,
                                  "To":to,
-                                 "price":275
+                                 "Price":275
                              };
         outResponse.setJsonPayload(flightDetails);
         _ = connection.respond(outResponse);
@@ -68,12 +68,12 @@ service<http> airlineReservationService {
     resource flightEmirates (http:Connection connection, http:InRequest inRequest) {
         http:OutResponse outResponse = {};
         json receivedPayload = inRequest.getJsonPayload();
-        json departureDate = receivedPayload.departure;
-        json returnDate = receivedPayload.returnDate;
-        json from = receivedPayload.from;
-        json to = receivedPayload.to;
+        json arrivalDate = receivedPayload.ArrivalDate;
+        json departureDate = receivedPayload.DepartureDate;
+        json from = receivedPayload.From;
+        json to = receivedPayload.To;
 
-        if (departureDate == null || returnDate == null || from == null || to == null) {
+        if (arrivalDate == null || departureDate == null || from == null || to == null) {
             outResponse.statusCode = 400;
             outResponse.setJsonPayload({"Message":"Bad Request - Invalid Payload"});
             _ = connection.respond(outResponse);
@@ -81,12 +81,12 @@ service<http> airlineReservationService {
         }
 
         json flightDetails = {
-                                 "Flight":"Emirates",
-                                 "DepartureDate":departureDate,
-                                 "ReturnDate":returnDate,
+                                 "Airline":"Emirates",
+                                 "ArrivalDate":arrivalDate,
+                                 "ReturnDate":departureDate,
                                  "From":from,
                                  "To":to,
-                                 "price":273
+                                 "Price":273
                              };
         outResponse.setJsonPayload(flightDetails);
         _ = connection.respond(outResponse);
