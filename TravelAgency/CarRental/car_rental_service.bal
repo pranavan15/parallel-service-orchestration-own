@@ -60,7 +60,7 @@ service<http> carRentalService {
     }
 
     @http:resourceConfig {methods:["POST"], path:"/sixt", consumes:["application/json"], produces:["application/json"]}
-    resource sixT (http:Connection connection, http:InRequest inRequest) {
+    resource sixt (http:Connection connection, http:InRequest inRequest) {
         http:OutResponse outResponse = {};
         json receivedPayload = inRequest.getJsonPayload();
         json arrivalDate = receivedPayload.ArrivalDate;
@@ -75,7 +75,7 @@ service<http> carRentalService {
         }
 
         json vehicleDetails = {
-                                  "Company":"SixT",
+                                  "Company":"Sixt",
                                   "VehicleType":vehicleType,
                                   "FromDate":arrivalDate,
                                   "ToDate":departureDate,

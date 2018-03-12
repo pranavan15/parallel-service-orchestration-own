@@ -22,7 +22,7 @@ service<http> hotelReservationService {
         }
 
         json hotelDetails = {
-                                "HotelName":"miramar",
+                                "HotelName":"Miramar",
                                 "FromDate":arrivalDate,
                                 "ToDate":departureDate,
                                 "DistanceToLocation":6
@@ -48,7 +48,7 @@ service<http> hotelReservationService {
         }
 
         json hotelDetails = {
-                                "HotelName":"aqueen",
+                                "HotelName":"Aqueen",
                                 "FromDate":arrivalDate,
                                 "ToDate":departureDate,
                                 "DistanceToLocation":4
@@ -74,7 +74,7 @@ service<http> hotelReservationService {
         }
 
         json hotelDetails = {
-                                "HotelName":"elizabeth",
+                                "HotelName":"Elizabeth",
                                 "FromDate":arrivalDate,
                                 "ToDate":departureDate,
                                 "DistanceToLocation":2

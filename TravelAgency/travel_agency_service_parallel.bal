@@ -212,22 +212,22 @@ service<http> travelAgencyService {
                 respWorkerSixt, _ = carRentalEP.post("/sixt", req);
                 respWorkerSixt -> fork;
             }
-        } join (some 1) (map carResponses) {
+        } join (some 1) (map vehicleResponses) {
             // Get the first responding worker
-            if (carResponses["driveSg"] != null) {
-                var resDriveSgWorker, _ = (any[])carResponses["driveSg"];
+            if (vehicleResponses["driveSg"] != null) {
+                var resDriveSgWorker, _ = (any[])vehicleResponses["driveSg"];
                 var responseDriveSg, _ = (http:InResponse)(resDriveSgWorker[0]);
                 jsonVehicleResponse = responseDriveSg.getJsonPayload();
             }
 
-            else if (carResponses["dreamCar"] != null) {
-                var resDreamCarWorker, _ = (any[])carResponses["dreamCar"];
+            else if (vehicleResponses["dreamCar"] != null) {
+                var resDreamCarWorker, _ = (any[])vehicleResponses["dreamCar"];
                 var responseDreamCar, _ = (http:InResponse)(resDreamCarWorker[0]);
                 jsonVehicleResponse = responseDreamCar.getJsonPayload();
             }
 
-            else if (carResponses["sixt"] != null) {
-                var resSixtWorker, _ = (any[])carResponses["sixt"];
+            else if (vehicleResponses["sixt"] != null) {
+                var resSixtWorker, _ = (any[])vehicleResponses["sixt"];
                 var responseSixt, _ = ((http:InResponse)(resSixtWorker[0]));
                 jsonVehicleResponse = responseSixt.getJsonPayload();
             }

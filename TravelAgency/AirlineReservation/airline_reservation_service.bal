@@ -54,7 +54,7 @@ service<http> airlineReservationService {
         json flightDetails = {
                                  "Airline":"Asiana",
                                  "ArrivalDate":arrivalDate,
-                                 "ReturnDate":arrivalDate,
+                                 "ReturnDate":departureDate,
                                  "From":from,
                                  "To":to,
                                  "Price":275
